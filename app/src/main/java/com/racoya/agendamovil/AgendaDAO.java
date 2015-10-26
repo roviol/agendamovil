@@ -1,5 +1,6 @@
 package com.racoya.agendamovil;
 
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -134,13 +135,14 @@ public class AgendaDAO {
                     builder.append(line);
                 }
             } else {
-                System.out.println("Error");
-                //Log.e(MainActivity.class.toString(), "Failedet JSON object");
+                Log.e(AgendaDAO.class.toString(), "Failedet JSON object");
             }
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            Log.e(AgendaDAO.class.toString(), "Fallo http");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(AgendaDAO.class.toString(), "Fallo IO");
+        } catch (NetworkOnMainThreadException e) {
+            Log.e(AgendaDAO.class.toString(), "Fallo Network");
         }
         return builder.toString();
     }

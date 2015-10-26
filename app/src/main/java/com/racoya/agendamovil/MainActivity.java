@@ -35,6 +35,29 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, TOAST_TEXT, Toast.LENGTH_LONG).show();
     }
 
+    private void buscarHorario(){
+
+        AgendaDAO agendaDao = new AgendaDAO("http://agenda.racoya.com/horario/1/");
+        txttitulo.setText(agendaDao.getTitulo());
+        for (Object turno : agendaDao.getTurnos()) {
+
+            Turno turnoObj = (Turno) turno;
+
+            for (int i = 0; i <= 6; i++) {
+                String orden = String.valueOf(i);
+                Dia diaAct = (Dia) agendaDao.getDias().get(orden);
+                if (diaAct != null) {
+                    Materia m = (Materia) diaAct.materias.get(turnoObj.id);
+                    if (m != null) {
+                        Log.i(MainActivity.class.toString(), "\t" + orden + " " + m.descripcion);
+                    } else {
+                        Log.i(MainActivity.class.toString(), "\t");
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -51,18 +74,7 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            AgendaDAO agendaDao = new AgendaDAO();
-            String agendaStr = agendaDao.getJSON("http://agenda.racoya.com/horario/1/");
-            try{
-                JSONObject jsonObject = new JSONObject(agendaStr);
-                Log.i(MainActivity.class.getName(), jsonObject.getString("titulo"));
-                txttitulo.setText(jsonObject.getString("titulo"));
-            } catch(Exception e){
-                e.printStackTrace();
-            }
-            finally{
-                System.out.println("Success");
-            }
+            buscarHorario();
             return true;
         }
 
