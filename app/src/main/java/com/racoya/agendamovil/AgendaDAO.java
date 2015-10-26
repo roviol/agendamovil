@@ -14,35 +14,147 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by roland on 10/24/15.
  */
 public class AgendaDAO {
-    public String getJSON(String address){
+
+    private String agendaStr;
+    private ArrayList turnos = new ArrayList();
+    private HashMap dias = new HashMap();
+    private JSONObject horarioObject;
+    private String titulo;
+    private String urlHorario;
+/*
+    public static void main(String[] s) {
+
+        AgendaDAO agendaDao = new AgendaDAO("http://agenda.racoya.com/horario/1/");
+        for (Object turno : agendaDao.turnos) {
+
+            Turno turnoObj = (Turno) turno;
+            System.out.print(turnoObj.desde);
+            System.out.print(" - ");
+            System.out.print(turnoObj.hasta);
+            for (int i = 0; i <= 6; i++) {
+                String orden = String.valueOf(i);
+                Dia diaAct = (Dia) agendaDao.dias.get(orden);
+                if (diaAct != null) {
+                    Materia m = (Materia) diaAct.materias.get(turnoObj.id);
+                    if (m != null) {
+                        System.out.print("\t"+orden + " " + m.descripcion);
+                    } else {
+                        System.out.print("\t");
+                    }
+                }
+                System.out.print(" - ");
+            }
+            System.out.println("");
+
+        }
+    }
+*/
+    public AgendaDAO(String urlHorario) {
+        this.urlHorario = urlHorario;
+        getHorario();
+        analizaHorario();
+    }
+
+    public void getHorario() {
+        agendaStr = getJSON(urlHorario);
+    }
+
+    public void parseTurnos() throws JSONException {
+        turnos = new ArrayList();
+        JSONArray turnosArreglo = horarioObject.getJSONArray("turnos");
+        for (int i = 0; i < turnosArreglo.length(); i++) {
+            JSONObject turnoObj = turnosArreglo.getJSONObject(i);
+            Turno turno = new Turno();
+            turno.id = String.valueOf(turnoObj.getInt("id"));
+            turno.desde = turnoObj.getString("desde");
+            turno.hasta = turnoObj.getString("hasta");
+            turnos.add(turno);
+        }
+    }
+
+    public void parseDias() throws JSONException {
+        dias = new HashMap();
+        JSONArray diasArreglo = horarioObject.getJSONArray("dias");
+        for (int i = 0; i < diasArreglo.length(); i++) {
+            JSONObject diaObj = diasArreglo.getJSONObject(i);
+            Dia dia = new Dia();
+            dia.dia = diaObj.getString("nombre");
+            dia.orden = diaObj.getString("dia");
+            HashMap materias = new HashMap();
+            JSONArray materiasArreglo = diaObj.getJSONArray("materias");
+            for (int j = 0; j < materiasArreglo.length(); j++) {
+                JSONObject matturno = materiasArreglo.getJSONObject(j);
+                Materia materia = new Materia();
+                materia.descripcion = matturno.getString("nombre");
+                materia.turnoid = matturno.getString("turno");
+                materias.put(String.valueOf(materia.turnoid), materia);
+            }
+            dia.setMaterias(materias);
+            dias.put(dia.orden, dia);
+        }
+    }
+
+    public void analizaHorario() {
+        try {
+            horarioObject = new JSONObject(agendaStr);
+            titulo = horarioObject.getString("titulo");
+            parseTurnos();
+            parseDias();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println("Success");
+        }
+    }
+
+    public String getJSON(String address) {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(address);
-        try{
+        try {
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
-            if(statusCode == 200){
+            if (statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
                 String line;
-                while((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     builder.append(line);
                 }
             } else {
-                Log.e(MainActivity.class.toString(), "Failedet JSON object");
+                System.out.println("Error");
+                //Log.e(MainActivity.class.toString(), "Failedet JSON object");
             }
-        }catch(ClientProtocolException e){
+        } catch (ClientProtocolException e) {
             e.printStackTrace();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return builder.toString();
     }
+
+    public ArrayList getTurnos() {
+        return turnos;
+    }
+
+    public HashMap getDias() {
+        return dias;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
 }
