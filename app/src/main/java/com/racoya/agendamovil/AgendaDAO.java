@@ -1,6 +1,6 @@
 package com.racoya.agendamovil;
 
-import android.os.NetworkOnMainThreadException;
+//import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -62,8 +62,11 @@ public class AgendaDAO {
 */
     public AgendaDAO(String urlHorario) {
         this.urlHorario = urlHorario;
+        Log.i(AgendaDAO.class.toString(), "Descargando horario");
         getHorario();
+        Log.i(AgendaDAO.class.toString(), "Analizando horario");
         analizaHorario();
+        Log.i(AgendaDAO.class.toString(), "Listo");
     }
 
     public void getHorario() {
@@ -141,7 +144,7 @@ public class AgendaDAO {
             Log.e(AgendaDAO.class.toString(), "Fallo http");
         } catch (IOException e) {
             Log.e(AgendaDAO.class.toString(), "Fallo IO");
-        } catch (NetworkOnMainThreadException e) {
+        } catch (Exception e) {
             Log.e(AgendaDAO.class.toString(), "Fallo Network");
         }
         return builder.toString();

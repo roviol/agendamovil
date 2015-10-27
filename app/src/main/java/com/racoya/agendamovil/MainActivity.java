@@ -8,6 +8,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +21,19 @@ public class MainActivity extends ActionBarActivity {
     private static final String TOAST_TEXT = "Test ads are being shown. "
             + "To show live ads, replace the ad unit ID in res/values/strings.xml with your own ad unit ID.";
     private TextView txttitulo;
+    private ListView listView;
+    private AgendaDAO agendaDao;
+    private ImageButton btsiguiente;
+    private ImageButton btanterior;
+    private int diaAct=1;
+    private AdaptadorHorario adaptaHorario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        btanterior=(ImageButton) findViewById(R.id.btback);
+        btsiguiente=(ImageButton) findViewById(R.id.btforward);
         // Load an ad into the AdMob banner view.
         txttitulo = (TextView) findViewById(R.id.txttitulo);
         AdView adView = (AdView) findViewById(R.id.adView);
@@ -33,12 +43,49 @@ public class MainActivity extends ActionBarActivity {
 
         // Toasts the test ad message on the screen. Remove this after defining your own ad unit ID.
         Toast.makeText(this, TOAST_TEXT, Toast.LENGTH_LONG).show();
+
+
+        this.listView = (ListView) findViewById(R.id.listView);
+        try {
+            buscarHorario();
+            adaptaHorario = new AdaptadorHorario(this, agendaDao);
+            this.listView.setAdapter(adaptaHorario);
+            txttitulo.setText(adaptaHorario.getTitulo());
+            adaptaHorario.notifyDataSetChanged();
+        }catch (Exception e){
+            Log.e(MainActivity.class.toString(),e.toString());
+        }
+        btanterior.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                diaAct--;
+                if (diaAct<0){
+                    diaAct=0;
+                }
+                adaptaHorario.setDia(diaAct);
+                txttitulo.setText(adaptaHorario.getTitulo());
+                adaptaHorario.notifyDataSetChanged();
+            }
+        });
+        btsiguiente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                diaAct++;
+                if (diaAct>6){
+                    diaAct = 6;
+                }
+                adaptaHorario.setDia(diaAct);
+                txttitulo.setText(adaptaHorario.getTitulo());
+                adaptaHorario.notifyDataSetChanged();
+            }
+        });
     }
 
     private void buscarHorario(){
 
-        AgendaDAO agendaDao = new AgendaDAO("http://agenda.racoya.com/horario/1/");
-        txttitulo.setText(agendaDao.getTitulo());
+        agendaDao = new AgendaDAO("http://agenda.racoya.com/horario/1/");
+        setTitle(agendaDao.getTitulo());
+        /*
         for (Object turno : agendaDao.getTurnos()) {
 
             Turno turnoObj = (Turno) turno;
@@ -55,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             }
-        }
+        }*/
     }
 
 
