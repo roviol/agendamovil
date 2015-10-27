@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".MainActivity">
 
-    <!-- view for AdMob Banner Ad -->
-    <com.google.android.gms.ads.AdView android:id="@+id/adView" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -56,6 +51,12 @@
             android:id="@+id/listView"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />
+
+        <!-- view for AdMob Banner Ad -->
+        <com.google.android.gms.ads.AdView android:id="@+id/adView" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true" ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id" />
     </LinearLayout>
 
 

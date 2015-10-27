@@ -2,7 +2,10 @@ package com.racoya.agendamovil;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -94,11 +97,31 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            buscarHorario();
+
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+            integrator.setPrompt("Agregar elemento");
+            integrator.setCameraId(0);  // Use a specific camera of the device
+            integrator.setBeepEnabled(false);
+            integrator.initiateScan();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult result=IntentIntegrator.parseActivityResult(requestCode,resultCode,intent);
+        if (result != null) {
+            String contents=result.getContents();
+            if (contents != null) {
+                Log.i(MainActivity.class.toString(), contents);
+                txttitulo.setText(contents);
+            }
+            else {
+                Log.i(MainActivity.class.toString(), "No barcode");
+            }
+        }
+    }
 }
