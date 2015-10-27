@@ -6,32 +6,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by roland on 10/26/15.
  */
 public class AdaptadorHorario extends BaseAdapter {
-    private final Activity actividad;
-    private final AgendaDAO agendaDAO;
-    private int dia=1;
+    private Activity actividad;
+    private AgendaDAO agendaDAO;
+    private int diaposicion=0;
+    private ArrayList listaDias;
+    private int maxDia;
+
 
     public AdaptadorHorario(Activity actividad, AgendaDAO agendaDAO) {
         super();
         this.actividad = actividad;
         this.agendaDAO = agendaDAO;
+        this.listaDias = agendaDAO.getListaDias();
+        this.maxDia = this.listaDias.size()-1;
     }
 
-    public int getDia() {
-        return dia;
+    public void nextDia(){
+        if(diaposicion<maxDia){
+            diaposicion++;
+        }
+    }
+
+    public void prevDia(){
+        if(diaposicion>0){
+            diaposicion--;
+        }
     }
 
     public String getTitulo(){
 
-        Dia diaObj = (Dia) agendaDAO.getDias().get(String.valueOf(dia));
+        Dia diaObj = (Dia) agendaDAO.getDias().get(listaDias.get(diaposicion));
         if (diaObj != null){
             return diaObj.getDia();
         }else{
@@ -39,9 +51,6 @@ public class AdaptadorHorario extends BaseAdapter {
         }
     }
 
-    public void setDia(int diap){
-        this.dia=diap;
-    }
 
     public View getView(int position, View convertView,
                         ViewGroup parent) {
@@ -54,11 +63,11 @@ public class AdaptadorHorario extends BaseAdapter {
 
             Turno turno = (Turno) agendaDAO.getTurnos().get(position);
             turnoView.setText(turno.getDesde() + "\n" + turno.getHasta());
-            Dia diaObj = (Dia) agendaDAO.getDias().get(String.valueOf(dia));
+            Dia diaObj = (Dia) agendaDAO.getDias().get(listaDias.get(diaposicion));
             Materia materia = (Materia) diaObj.getMaterias().get(turno.getId());
             textView.setText( materia.getDescripcion()  );
         }catch (Exception e){
-            Log.e(AdaptadorHorario.class.toString(),"Sin datos "+position+","+dia);
+            Log.e(AdaptadorHorario.class.toString(),"Sin datos "+position+","+diaposicion);
         }
 
 

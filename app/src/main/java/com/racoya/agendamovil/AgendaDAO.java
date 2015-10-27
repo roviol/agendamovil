@@ -32,6 +32,7 @@ public class AgendaDAO {
     private JSONObject horarioObject;
     private String titulo;
     private String urlHorario;
+    private ArrayList listaDias = new ArrayList();
 /*
     public static void main(String[] s) {
 
@@ -88,12 +89,14 @@ public class AgendaDAO {
 
     public void parseDias() throws JSONException {
         dias = new HashMap();
+        listaDias = new ArrayList();
         JSONArray diasArreglo = horarioObject.getJSONArray("dias");
         for (int i = 0; i < diasArreglo.length(); i++) {
             JSONObject diaObj = diasArreglo.getJSONObject(i);
             Dia dia = new Dia();
             dia.dia = diaObj.getString("nombre");
             dia.orden = diaObj.getString("dia");
+            listaDias.add(dia.orden);
             HashMap materias = new HashMap();
             JSONArray materiasArreglo = diaObj.getJSONArray("materias");
             for (int j = 0; j < materiasArreglo.length(); j++) {
@@ -162,4 +165,7 @@ public class AgendaDAO {
         return titulo;
     }
 
+    public ArrayList getListaDias() {
+        return listaDias;
+    }
 }

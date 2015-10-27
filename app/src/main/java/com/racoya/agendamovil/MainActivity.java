@@ -25,7 +25,6 @@ public class MainActivity extends ActionBarActivity {
     private AgendaDAO agendaDao;
     private ImageButton btsiguiente;
     private ImageButton btanterior;
-    private int diaAct=1;
     private AdaptadorHorario adaptaHorario;
 
     @Override
@@ -58,11 +57,7 @@ public class MainActivity extends ActionBarActivity {
         btanterior.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                diaAct--;
-                if (diaAct<0){
-                    diaAct=0;
-                }
-                adaptaHorario.setDia(diaAct);
+                adaptaHorario.prevDia();
                 txttitulo.setText(adaptaHorario.getTitulo());
                 adaptaHorario.notifyDataSetChanged();
             }
@@ -70,11 +65,7 @@ public class MainActivity extends ActionBarActivity {
         btsiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                diaAct++;
-                if (diaAct>6){
-                    diaAct = 6;
-                }
-                adaptaHorario.setDia(diaAct);
+                adaptaHorario.nextDia();
                 txttitulo.setText(adaptaHorario.getTitulo());
                 adaptaHorario.notifyDataSetChanged();
             }
@@ -85,24 +76,6 @@ public class MainActivity extends ActionBarActivity {
 
         agendaDao = new AgendaDAO("http://agenda.racoya.com/horario/1/");
         setTitle(agendaDao.getTitulo());
-        /*
-        for (Object turno : agendaDao.getTurnos()) {
-
-            Turno turnoObj = (Turno) turno;
-
-            for (int i = 0; i <= 6; i++) {
-                String orden = String.valueOf(i);
-                Dia diaAct = (Dia) agendaDao.getDias().get(orden);
-                if (diaAct != null) {
-                    Materia m = (Materia) diaAct.materias.get(turnoObj.id);
-                    if (m != null) {
-                        Log.i(MainActivity.class.toString(), "\t" + orden + " " + m.descripcion);
-                    } else {
-                        Log.i(MainActivity.class.toString(), "\t");
-                    }
-                }
-            }
-        }*/
     }
 
 
